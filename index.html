@@ -39,10 +39,19 @@
         this.load.image('ground', 'assets/platform.png');
         this.load.image('star', 'assets/star.png');
         this.load.image('bomb', 'assets/bomb.png');
-        this.load.spritesheet('dude', 
-            'assets/dude.png',
-            { frameWidth: 32, frameHeight: 48 }
-        );
+
+        this.load.image('run_1', 'assets/run_1.png');
+        this.load.image('run_2', 'assets/run_2.png');
+        this.load.image('run_3', 'assets/run_3.png');
+        this.load.image('run_4', 'assets/run_4.png');
+        this.load.image('run_5', 'assets/run_5.png');
+        this.load.image('run_6', 'assets/run_6.png');
+        this.load.image('run_7', 'assets/run_7.png');
+        this.load.image('run_8', 'assets/run_8.png');
+        // this.load.spritesheet('dude', 
+        //     'assets/knight.png',
+        //     { frameWidth: 224, frameHeight: 112 }
+        // );
     }
 
     function create ()
@@ -58,7 +67,7 @@
         platforms.create(750, 220, 'ground');
 
         // add player
-        player = this.physics.add.sprite(100, 450, 'dude');
+        player = this.physics.add.image(100, 450, 'run_8');
 
         player.setBounce(0.2);
         player.setCollideWorldBounds(true);
@@ -66,21 +75,46 @@
         // create animations
         this.anims.create({
             key: 'left',
-            frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-            frameRate: 10,
+            frames: [
+                {key: 'run_1'},
+                {key: 'run_2'},
+                {key: 'run_3'},
+                {key: 'run_4'},
+                {key: 'run_5'},
+                {key: 'run_6'},
+                {key: 'run_7'},
+                {key: 'run_8'},
+            ],
+            frameRate: 8,
             repeat: -1
         });
 
         this.anims.create({
             key: 'turn',
-            frames: [ { key: 'dude', frame: 4 } ],
+            frames: [ { key: 'run_8' } ],
             frameRate: 20
         });
 
+        // this.anims.create({
+        //     key: 'right',
+        //     frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 7 }),
+        //     frameRate: 10,
+        //     repeat: -1
+        // });
+
         this.anims.create({
             key: 'right',
-            frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-            frameRate: 10,
+            frames: [
+                {key: 'run_1'},
+                {key: 'run_2'},
+                {key: 'run_3'},
+                {key: 'run_4'},
+                {key: 'run_5'},
+                {key: 'run_6'},
+                {key: 'run_7'},
+                {key: 'run_8'},
+            ],
+            frameRate: 8,
             repeat: -1
         });
 
@@ -116,7 +150,7 @@
         if(Phaser.Input.Keyboard.JustDown(this.upArrow)){
             
             if(player.body.touching.down) {
-                player.setVelocityY(-280);
+                player.setVelocityY(-500);
                 this.timesJumped = 1;
             }else{
                 if(this.timesJumped == 1){
