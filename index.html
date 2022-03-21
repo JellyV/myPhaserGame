@@ -32,6 +32,12 @@
     };
 
     var game = new Phaser.Game(config);
+    var platforms;
+    var cursors;
+    var bombs;
+    var score = 0;
+    var scoreText;
+    var gameOver = false;
 
     function preload ()
     {
@@ -43,6 +49,8 @@
             'assets/dude.png',
             { frameWidth: 32, frameHeight: 48 }
         );
+
+        this.load.bitmapFont("pixelFont", "assets/font/font.png", "assets/font/font.xml");
     }
 
     function create ()
@@ -53,7 +61,7 @@
         // add platforms
         platforms = this.physics.add.staticGroup();
         platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-        platforms.create(600, 400, 'ground');
+        platforms.create(600, 370, 'ground');
         platforms.create(50, 250, 'ground');
         platforms.create(750, 220, 'ground');
 
@@ -101,11 +109,20 @@
             child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
         });
 
-        // add colliders
+        // add bombs group
+        bombs = this.physics.add.group();
+
+        // add colliders & overlap
         this.physics.add.collider(player, platforms);
         this.physics.add.collider(stars, platforms);
-
         this.physics.add.overlap(player, stars, collectStar, null, this);
+        this.physics.add.collider(bombs, platforms);
+        this.physics.add.collider(player, bombs, hitBomb, null, this);
+        
+        scoreText = this.add.bitmapText(16, 16, "pixelFont", "SCORE: 0", 40);  
+        // this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+
+              
     }
 
     function update ()
@@ -134,11 +151,11 @@
         if(Phaser.Input.Keyboard.JustDown(this.upArrow)){
             
             if(player.body.touching.down) {
-                player.setVelocityY(-280);
+                player.setVelocityY(-250);
                 this.timesJumped += 1;
             }else{
                 if(this.timesJumped < 1){
-                    player.setVelocityY(-150);
+                    player.setVelocityY(-240);
                     this.timesJumped += 1;
                 }
             }
@@ -152,6 +169,40 @@
     function collectStar (player, star)
     {
         star.disableBody(true, true);
+
+        score += 10;
+        scoreText.setText('Score: ' + score);
+
+        if (stars.countActive(true) === 0)
+        {
+            stars.children.iterate(function (child) {
+
+                child.enableBody(true, child.x, 0, true, true);
+
+            });
+
+            var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+
+            var bomb = bombs.create(x, 16, 'bomb');
+            bomb.setBounce(1);
+            bomb.setCollideWorldBounds(true);
+            bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+
+        }
+    }
+
+    function hitBomb (player, bomb)
+    {
+        this.physics.pause();
+
+        player.setTint(0xff0000);
+
+        player.anims.play('turn');
+
+        gameOver = true;
+
+        scoreText = this.add.text(300, 300, 'GAME OVER!', { fontSize: '50px', fill: '#FF0000', fontFamily: 'Georgia, "Goudy Bookletter 1911", Times, serif' });
+
     }
 
 
